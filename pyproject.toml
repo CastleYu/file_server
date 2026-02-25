@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "AbyssFS"
+version = "1.0.0"
+description = "A versatile multi-protocol file server manager (FTP/FTPS/SFTP)."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "CastleYu", email = "muziyuc@gmail.com"}
+]
+dependencies = [
+    "PyQt6>=6.4.0",
+    "pyftpdlib>=1.5.7",
+    "paramiko>=3.0.0",
+    "cryptography>=39.0.0",
+]
+
+[project.scripts]
+fs-manager = "ftp_app:main"
+
+[tool.setuptools]
+packages = ["ui", "control", "model", "protocol", "fs"]

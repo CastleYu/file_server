@@ -1,0 +1,4 @@
+PyQt6>=6.4.0
+pyftpdlib>=1.5.7
+paramiko>=3.0.0
+cryptography>=39.0.0
