@@ -13,6 +13,10 @@ jobs:
     name: Build on Windows
     runs-on: windows-latest
 
+    # 设置全局环境变量，解决非交互式环境下的下载授权问题
+    env:
+      NUITKA_AUTO_ALLOW_DOWNLOADS: "yes"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,6 +25,18 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+          cache: 'pip' # 自动缓存 pip 依赖
+
+      # 缓存 Nuitka 的编译产物和外部工具 (如 Dependency Walker)
+      - name: Cache Nuitka dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/Nuitka
+            ~/AppData/Local/Nuitka/Nuitka/Cache
+          key: ${{ runner.os }}-nuitka-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-nuitka-
 
       - name: Install dependencies
         run: |
@@ -31,28 +47,46 @@ jobs:
 
       - name: Verify ftp.ico
         run: |
-          if (-Not (Test-Path -Path ftp.ico)) { Write-Host "Warning: ftp.ico not found in repository root."; }
-          else { Write-Host "ftp.ico found." }
+          if (-Not (Test-Path -Path ftp.ico)) { 
+            Write-Host "Warning: ftp.ico not found in repository root." 
+          } else { 
+            Write-Host "ftp.ico found." 
+          }
         shell: pwsh
 
       - name: Build with Nuitka
         run: |
-          python -m nuitka --standalone --lto=yes --enable-plugins=pyqt6 --include-qt-plugins=styles,platforms --windows-console-mode=disable --windows-icon-from-ico=ftp.ico --include-package=pyftpdlib --include-package=paramiko --include-package=asyncore --include-package=asynchat --output-dir=build --output-filename=AbyssFS.exe ftp_app.py
+          python -m nuitka `
+            --standalone `
+            --lto=yes `
+            --enable-plugins=pyqt6 `
+            --include-qt-plugins=styles,platforms `
+            --windows-console-mode=disable `
+            --windows-icon-from-ico=ftp.ico `
+            --include-package=pyftpdlib `
+            --include-package=paramiko `
+            --include-package=asyncore `
+            --include-package=asynchat `
+            --output-dir=build `
+            --output-filename=AbyssFS.exe `
+            ftp_app.py
         shell: pwsh
 
       - name: Collect built executable
         run: |
-          $exe = Get-ChildItem -Path build -Filter '*.exe' -Recurse | Select-Object -First 1
+          # 寻找生成的 exe（通常在 build 目录下的 .dist 文件夹中）
+          $exe = Get-ChildItem -Path build -Filter 'AbyssFS.exe' -Recurse | Select-Object -First 1
           if (-Not $exe) {
             Write-Error "No executable found in build output."
             exit 1
           }
           New-Item -ItemType Directory -Path artifact -Force | Out-Null
           Copy-Item $exe.FullName -Destination artifact\AbyssFS.exe -Force
-          Write-Host "Packaged: artifact\AbyssFS.exe"
+          Write-Host "Packaged: $($exe.FullName) -> artifact\AbyssFS.exe"
         shell: pwsh
 
       - name: Upload to release
         uses: ncipollo/release-action@v1
         with:
           artifacts: artifact/*.exe
+          allowUpdates: true # 如果发布已存在，允许更新附件
