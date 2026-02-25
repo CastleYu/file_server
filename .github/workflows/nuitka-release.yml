@@ -1,0 +1,58 @@
+name: Build and release with Nuitka
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install nuitka wheel
+        shell: pwsh
+
+      - name: Verify ftp.ico
+        run: |
+          if (-Not (Test-Path -Path ftp.ico)) { Write-Host "Warning: ftp.ico not found in repository root."; }
+          else { Write-Host "ftp.ico found." }
+        shell: pwsh
+
+      - name: Build with Nuitka
+        run: |
+          python -m nuitka --standalone --lto=yes --enable-plugins=pyqt6 --include-qt-plugins=styles,platforms --windows-console-mode=disable --windows-icon-from-ico=ftp.ico --include-package=pyftpdlib --include-package=paramiko --include-package=asyncore --include-package=asynchat --output-dir=build --output-filename=AbyssFS.exe ftp_app.py
+        shell: pwsh
+
+      - name: Collect built executable
+        run: |
+          $exe = Get-ChildItem -Path build -Filter '*.exe' -Recurse | Select-Object -First 1
+          if (-Not $exe) {
+            Write-Error "No executable found in build output."
+            exit 1
+          }
+          New-Item -ItemType Directory -Path artifact -Force | Out-Null
+          Copy-Item $exe.FullName -Destination artifact\AbyssFS.exe -Force
+          Write-Host "Packaged: artifact\AbyssFS.exe"
+        shell: pwsh
+
+      - name: Upload to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: artifact/*.exe
