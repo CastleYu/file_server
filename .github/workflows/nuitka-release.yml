@@ -12,11 +12,7 @@ jobs:
   build:
     name: Build on Windows
     runs-on: windows-latest
-
-    # 设置全局环境变量，解决非交互式环境下的下载授权问题
-    env:
-      NUITKA_AUTO_ALLOW_DOWNLOADS: "yes"
-
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,6 +53,7 @@ jobs:
       - name: Build with Nuitka
         run: |
           python -m nuitka `
+            --assume-yes-for-downloads `
             --standalone `
             --lto=yes `
             --enable-plugins=pyqt6 `
@@ -68,7 +65,7 @@ jobs:
             --include-package=asyncore `
             --include-package=asynchat `
             --output-dir=build `
-            --output-filename=AbyssFS.exe `
+            --output-filename=FS.exe `
             ftp_app.py
         shell: pwsh
 
