@@ -54,7 +54,7 @@ jobs:
         run: |
           python -m nuitka `
             --assume-yes-for-downloads `
-            --standalone `
+            --onefile `
             --lto=yes `
             --enable-plugins=pyqt6 `
             --include-qt-plugins=styles,platforms `
@@ -72,14 +72,14 @@ jobs:
       - name: Collect built executable
         run: |
           # 寻找生成的 exe（通常在 build 目录下的 .dist 文件夹中）
-          $exe = Get-ChildItem -Path build -Filter 'AbyssFS.exe' -Recurse | Select-Object -First 1
+          $exe = Get-ChildItem -Path build -Filter 'FS.exe' -Recurse | Select-Object -First 1
           if (-Not $exe) {
             Write-Error "No executable found in build output."
             exit 1
           }
           New-Item -ItemType Directory -Path artifact -Force | Out-Null
-          Copy-Item $exe.FullName -Destination artifact\AbyssFS.exe -Force
-          Write-Host "Packaged: $($exe.FullName) -> artifact\AbyssFS.exe"
+          Copy-Item $exe.FullName -Destination artifact\FS.exe -Force
+          Write-Host "Packaged: $($exe.FullName) -> artifact\FS.exe"
         shell: pwsh
 
       - name: Upload to release
