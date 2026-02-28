@@ -1,0 +1,66 @@
+# 视频检测工具全新重构计划 (Clean-room Redesign)
+
+根据您的要求，我们**完全不依赖原有的具体代码实现**，而是提取核心的领域模型、业务需求以及**常量分离的设计理念**，从零开始设计并实现一套架构更清晰、易于扩展的面向对象版本。
+
+## 一、核心需求总结
+1. **预扫描与任务生成**：遍历目标目录寻找视频文件，对比本地历史记录过滤掉已检测过的文件，生成待处理任务队列。
+2. **视频解码完整性检测**：调用 [ffmpeg](file:///h:/Documents/Abyss/NASinOne/processor.py#250-275) 探测视频状态。根据输出中是否含有致命错误或可疑警告，对视频进行分级（正常、警告、损坏）。
+3. **断点续传/历史记录管理**：在各个扫描目录下维护状态历史，确保中断或后续再次扫描时可以跳过。
+4. **分类报告生成**：输出包含异常视频详细信息的错误报告（CSV格式）。
+5. **进度记录与性能预估**：运行时提供实时的状态更新、用时统计与 ETA（预计剩余时间）预测。
+6. **关注点分离（核心理念）**：
+    *   **用户级配置**集中管理（如全局日志路径、目标驱动器）。
+    *   **领域内控常量**（如特定正则表达式、默认阈值、重试次数等）就近分配到职责对应的模块内，避免配置中心过度膨胀和循环依赖。
+
+## 二、全新架构设计蓝图
+我们将系统划分为以下几个独立但协同的组件（包/模块）：
+
+### 1. [config.py](file:///h:/Documents/Abyss/NASinOne/config.py) (用户配置中心)
+*   **职责**：仅包含**用户需要关心并可能修改**的顶层配置项。
+*   **内容**：例如 `TARGET_DIR` (扫描目标), `VIDEO_EXTENSIONS` (支持的扩展名), `MAX_LOG_SIZE_MB`。不应包含任何内部使用的字符串模板或深层业务逻辑。
+
+### 2. `core/domain.py` (核心领域模型 - New!)
+*   **职责**：定义整个系统流转的核心数据结构。摆脱原来随意的字典传递。
+*   **模型设计**：
+    *   `VideoStatus` (Enum): 定义视频的状态如 `OK`, `WARNING`, `FATAL_ERROR`。
+    *   [VideoTask](file:///h:/Documents/Abyss/NASinOne/processor.py#159-357) (Data Class): 封装单个视频的信息（路径、大小、所属目录等）。
+    *   `CheckResult` (Data Class): 封装单次 FFmpeg 检测的输出结果（耗时、原始日志、解析状态、用户可读提示）。
+
+### 3. `components/history_manager.py` (断点历史与存储机制)
+*   **职责**：管理各目录下的 `.video_check_history.json`。
+*   **常量分离**：文件命中常量（如文件名、存盘缩进等）内聚在此模块顶部。
+*   **设计优化**：引入内存中的 **Directory Cache**。与其每次处理在同一个文件夹里的视频时都进行文件级读取，我们将缓存整个文件夹的状态树，以大幅减少磁盘 I/O 损耗。
+
+### 4. `components/scanner.py` (扫描器组件)
+*   **职责**：接受目标路径，协调 `HistoryManager` 并生成 `List[VideoTask]`。
+
+### 5. `components/ffmpeg_engine.py` (底层探测引擎引擎 - New!)
+*   **职责**：专注于“如何调用外部命令进行视频校验”，隔离副作用。
+*   **常量分离**：所有的 FFmpeg 致命/警告正则表达式关键词都作为内部常量被封装在这个引擎中。它应当返回标准化的 `CheckResult`，而不是对外暴露原生输出串。
+
+### 6. `components/reporter.py` (报告与日志记录)
+*   **职责**：将最终的 `CheckResult` 按需求分发（如追加到全局日志中，或把带错误的视频写入所属文件夹下的 [error_report.csv](file:///h:/Documents/Abyss/NASinOne/video_error_report.csv)）。
+
+### 7. `components/perf_predictor.py` (性能与ETA预测)
+*   **职责**：独立实现基于大小和耗时的性能统计算法（例如 EWLS）。
+
+### 8. [main.py](file:///h:/Documents/Abyss/NASinOne/main.py) (应用入口点/总线)
+*   **职责**：作为依赖注入的中心，串联 Scanner -> Engine -> HistoryManager -> Reporter，控制主循环流转。
+
+## 三、为什么这种 “全新设计” 更好？
+1. **彻底面向对象**：抛弃了通过 [dict](file:///h:/Documents/Abyss/NASinOne/processor.py#80-94) 传递松散数据的做法。使用强类型的 `Data Class` (如 [VideoTask](file:///h:/Documents/Abyss/NASinOne/processor.py#159-357)、`CheckResult`) 在组件之间传递信息，具有更好的代码提示和更强的安全性。
+2. **单一职责原则**：原有的 [VideoTaskProcessor](file:///h:/Documents/Abyss/NASinOne/processor.py#159-357) 身兼多职（既要调用 FFmpeg、又要计算 ETA、又要写日志历史）。现在我们拆分出了 `ffmpeg_engine`, `reporter` 和 `perf_predictor`，任何一部分都可以独立测试或替换（比如换成基于 `ffprobe` 的探测方式）。
+3. **极佳的常量治理**：[config.py](file:///h:/Documents/Abyss/NASinOne/config.py) 小而美。真正绑定在特殊逻辑上的字符串（如 FFmpeg 特定报错字符）深藏于 `ffmpeg_engine.py` 内部；而关于 JSON 的编解码设置则归类在 `history_manager.py` 中。
+
+## 四、执行步骤 (Execution Steps)
+考虑到我们在 `NASinOne` 目录进行完整的干净重写：
+1. 创建 `domain.py`，打下强类型数据基础。
+2. 创建 `history_manager.py`，实现支持字典缓存的高性能存取层。
+3. 创建 [scanner.py](file:///h:/Documents/Abyss/NASinOne/scanner.py) 生成扫描任务集。
+4. 创建 `ffmpeg_engine.py` 并隔离关键字常量。
+5. 创建 `perf_predictor.py`。
+6. 创建 `reporter.py` 接管日志和 CSV 生成。
+7. 拼装 [main.py](file:///h:/Documents/Abyss/NASinOne/main.py)。
+8. 进行模拟运行验证。
+
+(如果由于覆盖会导致您原有的代码丢失，我将在原目录下创建一个 `v2` 子目录；或者按照惯例，如果该目录是专用的工作区，我将直接通过新文件覆盖原有实现。**建议我们直接覆盖或重建同名文件进行重构。**)
