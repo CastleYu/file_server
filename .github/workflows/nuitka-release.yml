@@ -3,6 +3,7 @@ name: Build and Release (Nuitka)
 on:
   push:
     branches: [main, master]
+    tags: ["v*"]
   release:
     types: [published]
   workflow_dispatch:
@@ -15,9 +16,53 @@ permissions:
   contents: write
 
 jobs:
+  create-tag:
+    name: Create tag from version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get version from pyproject.toml
+        id: meta
+        run: |
+          VERSION=$(python3 -c "
+          import re
+          with open('pyproject.toml') as f:
+              m = re.search(r'version\s*=\s*[\"']([^\"']+)[\"']', f.read())
+          print(m.group(1) if m else '0.0.0')
+          ")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+          echo "Tag will be: v$VERSION"
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Create and push tag
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skip."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "Pushed tag $TAG"
+          fi
+
   build:
     name: Build (Windows)
     runs-on: windows-latest
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/')
 
     steps:
       - name: Checkout
@@ -93,8 +138,11 @@ jobs:
           path: artifact/FS.exe
 
       - name: Upload to Release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
         uses: ncipollo/release-action@v1
         with:
+          tag: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref_name }}
+          name: Release ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref_name }}
           artifacts: artifact/*.exe
           allowUpdates: true
+          makeLatest: true
