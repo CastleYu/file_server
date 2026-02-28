@@ -1,52 +1,57 @@
-name: Build and release with Nuitka
+name: Build and Release (Nuitka)
 
 on:
+  push:
+    branches: [main, master]
   release:
     types: [published]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
 
 jobs:
   build:
-    name: Build on Windows
+    name: Build (Windows)
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip' # 自动缓存 pip 依赖
+          python-version: "3.11"
+          cache: "pip"
 
-      # 缓存 Nuitka 的编译产物和外部工具 (如 Dependency Walker)
-      - name: Cache Nuitka dependencies
-        uses: actions/cache@v3
+      - name: Cache Nuitka
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/Nuitka
             ~/AppData/Local/Nuitka/Nuitka/Cache
-          key: ${{ runner.os }}-nuitka-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-nuitka-${{ hashFiles('**/requirements.txt', 'ftp_app.py') }}
           restore-keys: |
             ${{ runner.os }}-nuitka-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
+          pip install -r requirements.txt
           pip install nuitka wheel
         shell: pwsh
 
-      - name: Verify ftp.ico
+      - name: Check ftp.ico
         run: |
-          if (-Not (Test-Path -Path ftp.ico)) { 
-            Write-Host "Warning: ftp.ico not found in repository root." 
-          } else { 
-            Write-Host "ftp.ico found." 
+          if (-Not (Test-Path -Path ftp.ico)) {
+            Write-Host "Warning: ftp.ico not found in repository root."
+          } else {
+            Write-Host "ftp.ico found."
           }
         shell: pwsh
 
@@ -69,9 +74,8 @@ jobs:
             ftp_app.py
         shell: pwsh
 
-      - name: Collect built executable
+      - name: Collect executable
         run: |
-          # 寻找生成的 exe（通常在 build 目录下的 .dist 文件夹中）
           $exe = Get-ChildItem -Path build -Filter 'FS.exe' -Recurse | Select-Object -First 1
           if (-Not $exe) {
             Write-Error "No executable found in build output."
@@ -82,8 +86,15 @@ jobs:
           Write-Host "Packaged: $($exe.FullName) -> artifact\FS.exe"
         shell: pwsh
 
-      - name: Upload to release
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FS-windows
+          path: artifact/FS.exe
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
         uses: ncipollo/release-action@v1
         with:
           artifacts: artifact/*.exe
-          allowUpdates: true # 如果发布已存在，允许更新附件
+          allowUpdates: true
