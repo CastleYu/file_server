@@ -33,12 +33,7 @@ jobs:
       - name: Get version from pyproject.toml
         id: meta
         run: |
-          VERSION=$(python3 -c "
-          import re
-          with open('pyproject.toml') as f:
-              m = re.search(r'version\s*=\s*[\"']([^\"']+)[\"']', f.read())
-          print(m.group(1) if m else '0.0.0')
-          ")
+          VERSION=$(python3 -c 'import re; f=open("pyproject.toml"); m=re.search(r"version\s*=\s*\"([^\"]+)\"", f.read()); f.close(); print(m.group(1) if m else "0.0.0")')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=v$VERSION" >> $GITHUB_OUTPUT
           echo "Tag will be: v$VERSION"
