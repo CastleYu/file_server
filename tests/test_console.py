@@ -10,7 +10,7 @@ class LocateConsoleHwndTests(unittest.TestCase):
              patch.object(constants, "_window_class", return_value="ConsoleWindowClass"), \
              patch.object(constants, "_foreground_host_hwnd") as fg, \
              patch.object(constants, "_find_host_terminal_hwnd") as find_host, \
-             patch("abyssfs.ui.constants.ctypes.windll") as windll:
+             patch("abyssfs.ui.constants.ctypes.windll", create=True) as windll:
             windll.user32.IsWindowVisible.return_value = 1
             windll.user32.IsIconic.return_value = 0
             hwnd = constants._locate_console_hwnd()
@@ -22,7 +22,8 @@ class LocateConsoleHwndTests(unittest.TestCase):
         with patch.object(constants, "_get_console_window", return_value=0x10), \
              patch.object(constants, "_window_class", return_value="PseudoConsoleWindow"), \
              patch.object(constants, "_foreground_host_hwnd", return_value=0x777) as fg, \
-             patch.object(constants, "_find_host_terminal_hwnd") as find_host:
+             patch.object(constants, "_find_host_terminal_hwnd") as find_host, \
+             patch("abyssfs.ui.constants.ctypes.windll", create=True):
             hwnd = constants._locate_console_hwnd()
         self.assertEqual(0x777, hwnd)
         fg.assert_called_once_with(0x10)
@@ -75,7 +76,7 @@ class HideShowConsoleTests(unittest.TestCase):
              patch.object(constants, "_locate_console_hwnd", return_value=0x99) as locate, \
              patch.object(constants, "_is_host_window", return_value=True), \
              patch.object(constants, "_set_console_hidden") as set_hidden, \
-             patch("abyssfs.ui.constants.ctypes.windll") as windll:
+             patch("abyssfs.ui.constants.ctypes.windll", create=True) as windll:
             windll.user32.IsWindow.return_value = True
             constants.hide_console()
             self.assertFalse(constants.is_console_visible())
@@ -98,7 +99,7 @@ class HideShowConsoleTests(unittest.TestCase):
         user32 = MagicMock()
         user32.GetWindowLongW.return_value = constants.WS_EX_APPWINDOW
         with patch.object(constants, "_taskbar_tab") as tab, \
-             patch("abyssfs.ui.constants.ctypes.windll") as windll:
+             patch("abyssfs.ui.constants.ctypes.windll", create=True) as windll:
             windll.user32 = user32
             constants._set_console_hidden(0x123, True)
         tab.assert_called_once_with(0x123, False)

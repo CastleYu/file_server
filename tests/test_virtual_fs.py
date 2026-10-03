@@ -60,6 +60,8 @@ class VirtualFSTests(unittest.TestCase):
 
     def tearDown(self):
         os.chdir(self.orig_cwd)
+        # 后台删除任务仍可能访问临时目录，清理夹具前先等待其完成。
+        AsyncDeleteService.default()._jobs.join()
         try:
             self.tmp.cleanup()
         except OSError:
@@ -134,6 +136,8 @@ class VirtualFSTests(unittest.TestCase):
         self.assertTrue(os.path.exists(renamed_path))
 
         self.fs.remove("uploads/renamed.txt")
+        # 文件先被隔离到 uploads 内的队列；物理清理完成后目录才真正为空。
+        AsyncDeleteService.default()._jobs.join()
         self.fs.rmdir("uploads")
         self.assertFalse(os.path.exists(os.path.join(self.external, "uploads")))
 

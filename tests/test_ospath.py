@@ -42,10 +42,10 @@ class OspathTests(unittest.TestCase):
             resolved = ospath.realpath(tmp)
             self.assertFalse(resolved.startswith("\\\\?\\"))
             self.assertTrue(os.path.isabs(resolved))
-            self.assertEqual(
-                os.path.normcase(os.path.abspath(tmp)),
-                os.path.normcase(resolved),
-            )
+            # Windows realpath 会展开 8.3 短名称（例如 RUNNER~1），
+            # 字符串可以与 abspath 不同，但必须指向同一个目录。
+            self.assertTrue(os.path.samefile(tmp, resolved))
+            self.assertEqual(resolved, ospath.realpath(ospath.to_os_path(tmp)))
 
     def test_roundtrip_file_ops_on_nested_tree(self):
         with tempfile.TemporaryDirectory() as tmp:
