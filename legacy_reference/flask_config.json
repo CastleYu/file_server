@@ -1,0 +1,7 @@
+{
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": false,
+    "threaded": true,
+    "app_name": "Flask Qt App"
+}

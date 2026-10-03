@@ -29,7 +29,15 @@ ENV/
 # Project Specific
 logs/
 root/
+*.exe
+*.lnk
+!artifacts/
+!artifacts/windows/
+!artifacts/windows/ftp_app.exe
+!artifacts/windows/FS.lnk
+!artifacts/windows/2121FTP.lnk
 certs/host_key
+certs/sftp_host_key_*
 certs/*.pem
 !certs/placeholder.txt
 ftp_users.json

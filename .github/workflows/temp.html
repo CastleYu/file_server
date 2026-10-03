@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代杂志风漫画应用主页</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f4f2;
+            --black: #0f0f0f;
+            --white: #ffffff;
+            --gray: #888888;
+            --accent: #ff2a5f; /* 预留给高饱和度细节的强调色 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--black);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 巨大的背景重叠文字 */
+        .bg-text {
+            position: absolute;
+            font-family: 'Oswald', sans-serif;
+            font-size: 25vw;
+            color: rgba(0, 0, 0, 0.03);
+            font-weight: 700;
+            line-height: 0.8;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: -0.05em;
+        }
+
+        /* 主容器：不对称网格布局 */
+        .container {
+            width: 100%;
+            max-width: 1440px;
+            height: 90vh;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 4fr 6fr; /* 左4右6的不对称比例 */
+            position: relative;
+            z-index: 1;
+            padding: 40px;
+        }
+
+        /* 顶部导航与标签模块 */
+        .nav-tags {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            z-index: 10;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .tag {
+            display: inline-block;
+            border: 2px solid var(--black);
+            padding: 4px 10px;
+            margin-right: 10px;
+            text-transform: uppercase;
+        }
+
+        .tag.filled {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        /* 左侧文字与严谨排版区 */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* 巨大无衬线标题 */
+        .hero-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 8rem;
+            line-height: 0.85;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            width: 150%; /* 让文字突破左侧网格，跨越到右侧 */
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 色块高亮说明文 */
+        .description-block {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 25px 30px;
+            max-width: 400px;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .description-block::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--black);
+            z-index: -1;
+        }
+
+        /* 角色档案数据网格 */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 400px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            border-top: 2px solid var(--black);
+            padding-top: 20px;
+        }
+
+        .data-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-label {
+            color: var(--gray);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .data-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* 右侧突破边界的视觉区 */
+        .right-panel {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* 主立绘设定（这里使用占位图，请替换为您的赛璐璐风格高分辨率立绘） */
+        .hero-image {
+            position: absolute;
+            bottom: -5%;
+            right: -5%;
+            width: 110%; /* 突破容器边界 */
+            max-width: 800px;
+            z-index: 5;
+            filter: drop-shadow(15px 15px 0px rgba(0,0,0,0.1));
+            /* 提示：此处在实际应用中应为透明背景的PNG动漫人物 */
+        }
+
+        /* 拼贴艺术：拍立得照片风格 */
+        .polaroid {
+            position: absolute;
+            background-color: var(--white);
+            padding: 10px 10px 45px 10px;
+            box-shadow: 12px 12px 0px var(--black); /* 高对比度硬阴影 */
+            z-index: 15;
+            border: 2px solid var(--black);
+            transition: transform 0.3s ease;
+        }
+
+        .polaroid:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+        }
+
+        .polaroid img {
+            width: 180px;
+            height: 240px;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(120%); /* 保持黑白灰基调，衬托主立绘 */
+        }
+
+        .p-1 {
+            top: 15%;
+            left: -15%;
+            transform: rotate(-8deg);
+        }
+
+        .p-2 {
+            bottom: 10%;
+            right: 10%;
+            transform: rotate(5deg);
+        }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 12px;
+            left: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="bg-text">MANGA</div>
+
+<div class="container">
+
+    <div class="nav-tags">
+        <span class="tag filled">[ INDEX : 01 ]</span>
+        <span class="tag">[ STATUS : ACTIVE ]</span>
+        <span class="tag">[ DB_SYNC ]</span>
+    </div>
+
+    <div class="left-panel">
+        <h1 class="hero-title">
+            NEO-TOKYO<br>
+            <span style="color: transparent; -webkit-text-stroke: 3px var(--black);">SYNDICATE</span>
+        </h1>
+
+        <div class="description-block">
+            [ FILE_DESC ] 记录新东京市地下网络的最强能力者。高解析度扫描完成。目标确认具备高危等级，请授权解锁更多角色档案与独家漫画剧情。
+        </div>
+
+        <div class="data-grid">
+            <div class="data-item">
+                <span class="data-label">[ CLASSIFICATION ]</span>
+                <span class="data-value">S-CLASS STRIKER</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">[ COMBAT_POWER ]</span>
+                <span class="data-value">9,420 PTS</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">[ LAST_SEEN ]</span>
+                <span class="data-value">SECTOR 7G</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label">[ AFFILIATION ]</span>
+                <span class="data-value">ROGUE</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+
+        <div class="polaroid p-1">
+            <img src="https://images.unsplash.com/photo-1560930950-5cc20e80e392?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Scene Detail">
+            <div class="polaroid-caption">[ SCENE_01 ]</div>
+        </div>
+
+        <img class="hero-image" src="https://images.unsplash.com/photo-1618331835717-801e976710b2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Anime Character Hero Image" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%);">
+
+        <div class="polaroid p-2">
+            <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Weapon Detail">
+            <div class="polaroid-caption">[ WEAPON_DATA ]</div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

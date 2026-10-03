@@ -1,0 +1,34 @@
+{
+    "protocol": "ftp",
+    "host": "0.0.0.0",
+    "port": 2121,
+    "banner": "",
+    "max_cons": 256,
+    "max_cons_per_ip": 5,
+    "default_root": "C:\\legacy-root",
+    "tls_config": {
+        "certfile": "",
+        "keyfile": "",
+        "require_tls": true
+    },
+    "ssh_config": {
+        "host_key_path": "",
+        "auth_methods": ["password"]
+    },
+    "users": [
+        {
+            "username": "legacy",
+            "password": "secret",
+            "homedir": "C:\\legacy-root",
+            "perm": "elr",
+            "allowed_ips": ["192.168.1.*", "10.0.0.1"],
+            "virtual_dirs": [
+                {
+                    "virtual_name": "media",
+                    "real_path": "C:\\legacy-media",
+                    "perm": "elr"
+                }
+            ]
+        }
+    ]
+}

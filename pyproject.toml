@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "AbyssFS"
 version = "1.0.0"
-description = "A versatile multi-protocol file server manager (FTP/FTPS/SFTP)."
+description = "A versatile multi-protocol file server manager (FTP/FTPS/SFTP/SMB/WebDAV/NFS)."
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -17,10 +17,24 @@ dependencies = [
     "pyftpdlib>=1.5.7",
     "paramiko>=3.0.0",
     "cryptography>=39.0.0",
+    "pyOpenSSL>=26.3.0; python_version>='3.9'",
+    "impacket>=0.11.0",
+    "wsgidav>=4.3.0",
+    "cheroot>=10.0.0",
 ]
 
 [project.scripts]
-fs-manager = "ftp_app:main"
+fs-manager = "abyssfs.ui.main_window:main"
+abyssfs-service = "abyssfs.service.cli:main"
 
 [tool.setuptools]
-packages = ["ui", "control", "model", "protocol", "fs"]
+packages = [
+    "abyssfs",
+    "abyssfs.ui",
+    "abyssfs.control",
+    "abyssfs.model",
+    "abyssfs.protocol",
+    "abyssfs.fs",
+    "abyssfs.plugins",
+    "abyssfs.service",
+]

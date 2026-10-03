@@ -22,6 +22,7 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
+      exists: ${{ steps.check-tag.outputs.exists }}
 
     steps:
       - name: Checkout
@@ -41,24 +42,41 @@ jobs:
       - name: Fetch tags
         run: git fetch --tags
 
-      - name: Create and push tag
+      - name: Check if tag exists
+        id: check-tag
         run: |
           TAG="${{ steps.meta.outputs.tag }}"
           if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "Tag $TAG already exists, skip."
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $TAG already exists."
           else
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag "$TAG"
-            git push origin "$TAG"
-            echo "Pushed tag $TAG"
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag $TAG does not exist."
           fi
+
+      - name: Create and push tag
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          TAG="${{ steps.meta.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "Pushed tag $TAG"
 
   build:
     name: Build (Windows)
     runs-on: windows-latest
     needs: create-tag
-    if: ${{ always() && (needs.create-tag.result == 'success' || needs.create-tag.result == 'skipped') }}
+    if: |
+      always() &&
+      (needs.create-tag.result == 'success' || needs.create-tag.result == 'skipped') &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'release' ||
+        startsWith(github.ref, 'refs/tags/') ||
+        needs.create-tag.outputs.exists == 'false'
+      )
 
     steps:
       - name: Checkout
@@ -87,12 +105,12 @@ jobs:
           pip install nuitka wheel
         shell: pwsh
 
-      - name: Check ftp.ico
+      - name: Check app icon
         run: |
-          if (-Not (Test-Path -Path ftp.ico)) {
-            Write-Host "Warning: ftp.ico not found in repository root."
+          if (-Not (Test-Path -Path assets/icons/ftp.ico)) {
+            Write-Host "Warning: assets/icons/ftp.ico not found."
           } else {
-            Write-Host "ftp.ico found."
+            Write-Host "App icon found."
           }
         shell: pwsh
 
@@ -105,9 +123,14 @@ jobs:
             --enable-plugins=pyqt6 `
             --include-qt-plugins=styles,platforms `
             --windows-console-mode=disable `
-            --windows-icon-from-ico=ftp.ico `
+            --windows-icon-from-ico=assets/icons/ftp.ico `
+            --include-data-files=assets/icons/ftp.ico=assets/icons/ftp.ico `
+            --include-data-files=assets/icons/fs.ico=assets/icons/fs.ico `
             --include-package=pyftpdlib `
             --include-package=paramiko `
+            --include-package=impacket `
+            --include-package=wsgidav `
+            --include-package=cheroot `
             --include-package=asyncore `
             --include-package=asynchat `
             --output-dir=build `

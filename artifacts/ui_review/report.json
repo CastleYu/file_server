@@ -1,0 +1,370 @@
+{
+  "captures": [
+    {
+      "name": "settings_protocol_ftp",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_protocol_ftp.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_network",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_network.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_protocol",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_protocol.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_plugins",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_plugins.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_ftp",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_ftp.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_ftps",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_ftps.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_sftp",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_sftp.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_smb",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_smb.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_webdav",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_webdav.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "settings_proto_nfs",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\settings_proto_nfs.png",
+      "width": 560,
+      "height": 533,
+      "hint_w": 524,
+      "hint_h": 542,
+      "min_w": 560,
+      "min_h": 308
+    },
+    {
+      "name": "protocol_dialog_smb",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\protocol_dialog_smb.png",
+      "width": 560,
+      "height": 502,
+      "hint_w": 460,
+      "hint_h": 502,
+      "min_w": 560,
+      "min_h": 268
+    },
+    {
+      "name": "user_dialog",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\user_dialog.png",
+      "width": 420,
+      "height": 567,
+      "hint_w": 420,
+      "hint_h": 609,
+      "min_w": 420,
+      "min_h": 567
+    },
+    {
+      "name": "vdir_dialog",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\vdir_dialog.png",
+      "width": 420,
+      "height": 227,
+      "hint_w": 420,
+      "hint_h": 227,
+      "min_w": 420,
+      "min_h": 227
+    },
+    {
+      "name": "main_window",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_window.png",
+      "width": 450,
+      "height": 487,
+      "hint_w": 450,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_ftp",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_ftp.png",
+      "width": 450,
+      "height": 487,
+      "hint_w": 450,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_ftps",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_ftps.png",
+      "width": 498,
+      "height": 487,
+      "hint_w": 498,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_sftp",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_sftp.png",
+      "width": 498,
+      "height": 487,
+      "hint_w": 498,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_smb",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_smb.png",
+      "width": 474,
+      "height": 487,
+      "hint_w": 474,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_webdav",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_webdav.png",
+      "width": 442,
+      "height": 487,
+      "hint_w": 442,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    },
+    {
+      "name": "main_proto_nfs",
+      "file": "H:\\Documents\\Abyss\\FS\\artifacts\\ui_review\\main_proto_nfs.png",
+      "width": 450,
+      "height": 487,
+      "hint_w": 450,
+      "hint_h": 487,
+      "min_w": 442,
+      "min_h": 365
+    }
+  ],
+  "issues": [
+    "虚拟目录对话框文案未再出现 FTP 字样检查完成"
+  ],
+  "settings_radios": [
+    {
+      "title": "FTP（明文，无加密）",
+      "proto": "ftp",
+      "checked": true,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    },
+    {
+      "title": "FTPS（FTP over TLS，推荐）",
+      "proto": "ftps",
+      "checked": false,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    },
+    {
+      "title": "SFTP（SSH 文件传输）",
+      "proto": "sftp",
+      "checked": false,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    },
+    {
+      "title": "SMB（Windows 文件共享）",
+      "proto": "smb",
+      "checked": false,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    },
+    {
+      "title": "WebDAV（HTTP 文件访问）",
+      "proto": "webdav",
+      "checked": false,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    },
+    {
+      "title": "NFS（实验级 NFSv3）",
+      "proto": "nfs",
+      "checked": false,
+      "visible": true,
+      "width": 480,
+      "height": 17
+    }
+  ],
+  "settings_hint": {
+    "w": 524,
+    "h": 542
+  },
+  "settings_ftps_status": "⚠ FTPS 证书未配置: certfile 不能为空",
+  "settings_sftp_status": "⚠ SFTP 主机密钥未配置: host_key_path 不能为空",
+  "protocol_dialog_radios": [
+    {
+      "title": "FTP（明文，无加密）",
+      "proto": "ftp",
+      "checked": false,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "title": "FTPS（FTP over TLS，推荐）",
+      "proto": "ftps",
+      "checked": false,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "title": "SFTP（SSH 文件传输）",
+      "proto": "sftp",
+      "checked": false,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "title": "SMB（Windows 文件共享）",
+      "proto": "smb",
+      "checked": true,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "title": "WebDAV（HTTP 文件访问）",
+      "proto": "webdav",
+      "checked": false,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    },
+    {
+      "title": "NFS（实验级 NFSv3）",
+      "proto": "nfs",
+      "checked": false,
+      "visible": false,
+      "width": 640,
+      "height": 480
+    }
+  ],
+  "user_dialog_title": "添加用户",
+  "vdir_labels": [
+    "虚拟目录名称 (客户端中显示的名称，留空则使用文件夹名):",
+    "真实路径 (可拖放文件夹):",
+    "路径校验:"
+  ],
+  "main_proto_labels": {
+    "ftp": "FTP（明文）",
+    "ftps": "FTPS（TLS加密）",
+    "sftp": "SFTP（SSH加密）",
+    "smb": "SMB（文件共享）",
+    "webdav": "WebDAV",
+    "nfs": "NFS（实验）"
+  },
+  "vdir_ftp_legacy_copy": [],
+  "main_proto_text": "🔓 FTP（明文）",
+  "main_table_headers": [
+    "用户名",
+    "根目录",
+    "权限",
+    "虚拟数",
+    "操作"
+  ],
+  "main_start_text": "启动服务器",
+  "main_settings_text": "⚙ 全局设置...",
+  "main_proto_cycle": [
+    {
+      "proto": "ftp",
+      "text": "🔓 FTP（明文）",
+      "elided": false
+    },
+    {
+      "proto": "ftps",
+      "text": "🔒 FTPS（TLS加密）",
+      "elided": true
+    },
+    {
+      "proto": "sftp",
+      "text": "🛡 SFTP（SSH加密）",
+      "elided": false
+    },
+    {
+      "proto": "smb",
+      "text": "🪟 SMB（文件共享）",
+      "elided": false
+    },
+    {
+      "proto": "webdav",
+      "text": "🌐 WebDAV",
+      "elided": false
+    },
+    {
+      "proto": "nfs",
+      "text": "📦 NFS（实验）",
+      "elided": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+graph TD
+    %% 样式定义
+    classDef gui fill:#d4edda,stroke:#28a745,stroke-width:2px;
+    classDef controller fill:#cce5ff,stroke:#007bff,stroke-width:2px;
+    classDef backend fill:#fff3cd,stroke:#ffc107,stroke-width:2px;
+    classDef model fill:#f8d7da,stroke:#dc3545,stroke-width:2px;
+
+    subgraph "前端视图层 (PyQt6)"
+        MW[MainWindow]
+        UD[UserDialog]
+        VD[VirtualDirectoryDialog]
+        PW[PermissionWidget]
+        MW -->|管理用户列表| UD
+        UD -->|编辑目录| VD
+        UD -->|控制权限| PW
+    end
+
+    subgraph "核心控制器"
+        FSC[FileServerController]
+    end
+
+    subgraph "背景协议与运行时"
+        FST[FileServerThread]
+        FCTX[FileServerContext]
+        VFTPH[VirtualFTPHandler]
+        FTP["FTPServer<br/><i>(pyftpdlib)</i>"]
+    end
+
+    subgraph "协议无关数据模型"
+        UP[UserProfile]
+        VDM[VirtualDirectory]
+    end
+
+    %% 联系与连接
+    MW -->|控制启动及配置流向| FSC
+    FSC -->|配置持久化读写| FCTX
+    FSC -->|线程激活| FST
+    
+    FST -->|接管| FTP
+    FTP -.->|事件处理| VFTPH
+    
+    FCTX -->|包含| UP
+    UP -->|包含| VDM
+
+    %% 赋予类别
+    class MW,UD,VD,PW gui;
+    class FSC controller;
+    class FST,FCTX,VFTPH backend;
+    class UP,VDM model;
