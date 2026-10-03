@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, ubuntu-latest]
         python-version: ["3.11"]
 
     steps:
@@ -35,4 +35,6 @@ jobs:
           python -m pip install -r requirements.txt
 
       - name: Run unittest
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: python -m unittest discover -s tests -v
